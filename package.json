@@ -1,0 +1,17 @@
+{
+  "name": "company-knowledge-library",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/server.mjs --watch",
+    "build": "node scripts/build.mjs",
+    "preview": "node scripts/server.mjs"
+  },
+  "dependencies": {
+    "markdown-it": "^14.1.1"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
