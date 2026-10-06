@@ -30,7 +30,9 @@ npm run preview   # 本地预览
 
 ## Cloudflare Pages 部署
 
-连接 GitHub 仓库 `Esdeath/aicompany`，生产分支为 `main`。
+Cloudflare Pages 项目 `aicompany` 已连接 GitHub 仓库 [Esdeath/aicompany](https://github.com/Esdeath/aicompany)，生产分支为 `main`。推送到 `main` 后自动构建和发布。
+
+正式网址：[www.labook.cn](https://www.labook.cn)。Pages 地址：[aicompany-5ny.pages.dev](https://aicompany-5ny.pages.dev)。
 
 | 构建设置 | 值 |
 | --- | --- |
@@ -43,4 +45,4 @@ npm run preview   # 本地预览
 
 构建会生成使用正式域名的 canonical、Open Graph、`sitemap.xml` 和 `robots.txt`。可通过构建环境变量 `SITE_URL` 修改域名。
 
-自定义域名：先在 Pages 项目的 Custom domains 中添加 `www.labook.cn`，再在阿里云解析添加 `www` 的 CNAME，目标使用该 Pages 项目的实际 `*.pages.dev` 地址。GitHub 的 `main` 分支更新后由 Pages 自动重新构建。
+自定义域名 `www.labook.cn` 已登记在 Pages 项目中。阿里云解析使用 `www` 的 CNAME，目标为 `aicompany-5ny.pages.dev`，TTL 为 600 秒。
