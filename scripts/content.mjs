@@ -38,7 +38,7 @@ function articleMetadata(raw, sourcePath) {
   const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/);
   if (!match) return { body: raw, metadata: {} };
   const metadata = {};
-  const fields = new Set(['title', 'date', 'dateLabel', 'category', 'summary', 'collection']);
+  const fields = new Set(['title', 'date', 'dateLabel', 'category', 'summary', 'collection', 'sourceTitle', 'sourceName', 'sourceUrl', 'sourceForm', 'sourceStatus', 'sourceNote', 'sourcePublished']);
   for (const line of match[1].split(/\r?\n/)) {
     if (!line.trim() || line.trimStart().startsWith('#')) continue;
     const field = line.match(/^([A-Za-z][A-Za-z0-9]*):\s*(".*")\s*$/);
@@ -49,15 +49,29 @@ function articleMetadata(raw, sourcePath) {
     if (typeof value !== 'string') throw new Error(`${sourcePath}: ${field[1]} 必须是字符串。`);
     metadata[field[1]] = value;
   }
-  if (Object.hasOwn(metadata, 'date') && metadata.date) {
-    const date = metadata.date;
+  for (const field of ['date', 'sourcePublished']) {
+    const date = metadata[field];
+    if (!date) continue;
     const validFormat = /^(?:19|20)\d{2}(?:-(?:0[1-9]|1[0-2])(?:-(?:0[1-9]|[12]\d|3[01]))?)?$/.test(date);
     if (!validFormat || (date.length === 10 && fullDate(date) !== date)) {
-      throw new Error(`${sourcePath}: date 必须是有效的 YYYY、YYYY-MM 或 YYYY-MM-DD。`);
+      throw new Error(`${sourcePath}: ${field} 必须是有效的 YYYY、YYYY-MM 或 YYYY-MM-DD。`);
     }
   }
   if (metadata.category && !['演讲', '访谈', '随笔', '报道', '讲话', '业绩会'].includes(metadata.category)) {
     throw new Error(`${sourcePath}: 未支持的文章类型 ${metadata.category}。`);
+  }
+  if (metadata.sourceUrl) {
+    let source;
+    try { source = new URL(metadata.sourceUrl); } catch { throw new Error(`${sourcePath}: sourceUrl 必须是有效的原资料地址。`); }
+    if (!['https:', 'http:'].includes(source.protocol) || source.username || source.password) {
+      throw new Error(`${sourcePath}: sourceUrl 必须是无凭据的 http(s) 地址。`);
+    }
+    if (!['original', 'author_republish', 'reprint_only'].includes(metadata.sourceStatus)) {
+      throw new Error(`${sourcePath}: sourceStatus 必须明确首发、作者公开稿或转载。`);
+    }
+    if (!['full_text', 'excerpt', 'report_excerpt', 'video', 'audio', 'book'].includes(metadata.sourceForm)) {
+      throw new Error(`${sourcePath}: sourceForm 必须明确原稿的资料形式。`);
+    }
   }
   return { body: raw.slice(match[0].length), metadata };
 }
@@ -328,6 +342,11 @@ export async function readLibrary(root = process.cwd()) {
       const article = {
         id, companyId: company.id, title, displayTitle: datedTitle(title, date, company.person, metadata.dateLabel), date, year: date.slice(0, 4),
         dateLabel: metadata.dateLabel || '', collection: metadata.collection || '',
+        source: metadata.sourceUrl ? {
+          title: metadata.sourceTitle || title, name: metadata.sourceName || '',
+          url: metadata.sourceUrl, form: metadata.sourceForm, status: metadata.sourceStatus,
+          note: metadata.sourceNote || '', published: metadata.sourcePublished || '',
+        } : null,
         category: metadata.category || articleCategory(title, body, sourcePath),
         excerpt: metadata.summary || excerptFrom(tokens, title, company.person),
         readingMinutes: Math.max(1, Math.ceil(wordCount / 500)),

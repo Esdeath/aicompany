@@ -316,6 +316,14 @@ kbd { padding: 2px 4px; border: 1px solid var(--line); border-radius: 3px; font-
 .copy-link { display: inline-flex; align-items: center; gap: 6px; min-height: 29px; padding: 5px 8px; border: 1px solid var(--line); color: var(--subtle); font-size: 11px; line-height: 1.5; }
 .copy-link svg { width: 13px; height: 13px; }
 .copy-link:hover { color: var(--accent); border-color: var(--accent-underline); }
+.original-source { margin: 0 0 34px; padding: 22px 24px; border: 1px solid var(--accent-underline); background: var(--accent-soft); overflow-wrap: anywhere; }
+.source-meta { display: flex; flex-wrap: wrap; gap: 7px 16px; color: var(--muted); font-size: 12px; line-height: 1.7; }
+.original-source h2 { margin: 11px 0; color: var(--fg); font-family: var(--reading); font-size: 21px; font-weight: 600; line-height: 1.6; }
+.original-source p { max-width: 65em; margin: 0 0 15px; color: var(--muted); font-size: 13px; line-height: 1.9; }
+.source-action { display: inline-flex; align-items: center; gap: 10px; min-height: 38px; padding: 8px 13px; border: 1px solid var(--accent-underline); color: var(--accent); font-size: 13px; }
+.source-action:hover { border-color: var(--accent); background: var(--surface); }
+.source-action svg { width: 16px; height: 16px; }
+.original-source .source-reading-note { margin: 13px 0 0; font-size: 12px; }
 .article-layout { display: grid; grid-template-columns: minmax(0, 1fr) 168px; align-items: start; gap: 37px; font-size: var(--article-font-size); }
 .article-layout:not(:has(.article-toc)) { grid-template-columns: minmax(0, 1fr); max-width: 760px; }
 .prose { min-width: 0; color: var(--fg); font-family: var(--reading); font-size: var(--article-font-scale); line-height: 1.85; letter-spacing: 0.01em; font-feature-settings: "kern" 1, "liga" 1; overflow-wrap: anywhere; }
