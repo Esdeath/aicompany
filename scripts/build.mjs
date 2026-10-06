@@ -66,7 +66,7 @@ export async function build() {
     await writeFile(path.join(staging, 'robots.txt'), `User-agent: *\nAllow: /\n\nSitemap: ${pageUrl('/sitemap.xml', siteUrl)}\n`, 'utf8');
     const searchIndex = library.articles.map(article => ({
       id: article.id,
-      title: article.title,
+      title: article.displayTitle,
       url: article.url,
       company: library.companies.find(c => c.id === article.companyId).name,
       person: library.companies.find(c => c.id === article.companyId).person,

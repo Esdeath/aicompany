@@ -97,6 +97,22 @@ function fullDate(value) {
   return !Number.isNaN(parsed.valueOf()) && parsed.toISOString().startsWith(iso) ? iso : '';
 }
 
+function datedTitle(title, date, person) {
+  const dateLabel = date.length === 10 ? date.replaceAll('-', '.') : date ? `${date}年` : '日期未注明';
+  const personPrefix = person && title.startsWith(person) ? person : '';
+  const remainder = title.slice(personPrefix.length);
+  // Move a matching source year to the front without changing dates in the subject.
+  const leadingYear = remainder.match(/^((?:19|20)\d{2})(?:年)?(?![\d年月日./-])/);
+  if (leadingYear?.[1] === date.slice(0, 4)) {
+    const subject = remainder.slice(leadingYear[0].length).trimStart();
+    const creditYear = personPrefix
+      ? subject && !/^(?:年|度|的|前|后|初|末|底|至|到|以来|之前|之后)/.test(subject)
+      : person && subject.startsWith(person);
+    if (creditYear) title = `${personPrefix}${subject}`;
+  }
+  return `${dateLabel} · ${title}`;
+}
+
 function articleDate(raw, sourcePath, tokens) {
   // Only date lines and explicit source/publication credits may provide a date.
   // Years in the narrative (e.g. a founder's first job) are never publication dates.
@@ -281,7 +297,7 @@ export async function readLibrary(root = process.cwd()) {
       const id = hash(sourcePath).slice(0, 12);
       const prepared = headingAnchors(tokens, title);
       const article = {
-        id, companyId: company.id, title, date, year: date.slice(0, 4),
+        id, companyId: company.id, title, displayTitle: datedTitle(title, date, company.person), date, year: date.slice(0, 4),
         category: articleCategory(title, raw, sourcePath),
         excerpt: excerptFrom(tokens, title, company.person),
         readingMinutes: Math.max(1, Math.ceil(wordCount / 500)),

@@ -39,7 +39,7 @@ function sidebar(library, currentCompany, currentArticle) {
       ${library.companies.map(company => `<details class="company-group" ${currentCompany?.id === company.id ? 'open' : ''}>
         <summary class="company-summary">${icon('chevron', 'chevron')}<span class="company-name">${e(company.name)}</span><span class="company-count">${company.articles.length}</span></summary>
         <div class="company-links"><a class="company-overview${currentCompany?.id === company.id && !currentArticle ? ' active' : ''}" href="${companyUrl(company)}" ${currentCompany?.id === company.id && !currentArticle ? 'aria-current="page"' : ''}>全部文章${icon('arrow')}</a>
-        <nav class="article-links" aria-label="${e(company.name)}文章">${company.articles.map(article => `<a href="${article.url}" class="${currentArticle?.id === article.id ? 'active' : ''}" ${currentArticle?.id === article.id ? 'aria-current="page"' : ''}><span>${e(article.title)}</span></a>`).join('')}</nav></div>
+        <nav class="article-links" aria-label="${e(company.name)}文章">${company.articles.map(article => `<a href="${article.url}" class="${currentArticle?.id === article.id ? 'active' : ''}" ${currentArticle?.id === article.id ? 'aria-current="page"' : ''}><span>${e(article.displayTitle)}</span></a>`).join('')}</nav></div>
       </details>`).join('')}
     </nav>
     <div class="sidebar-footer"><p class="library-count">${library.companies.length} 家公司 <span>·</span> ${library.articles.length} 篇文章</p><div class="sidebar-tools">
@@ -72,7 +72,7 @@ function layout(library, { title, description, content, company, article, pageTy
 }
 
 const pageFooter = () => '<footer class="page-footer"><span>企业知识库</span><span>读原文，理解企业。</span></footer>';
-const row = (article, company, filterable = false) => `<a class="article-row" href="${article.url}" ${filterable ? `data-type="${e(article.category)}" data-year="${e(article.year || 'undated')}" data-date="${e(article.date)}"` : ''}><div class="article-row-main"><div class="article-row-meta">${company ? `<span class="row-company">${e(company.name)}</span>` : ''}<span>${readableDate(article)}</span><span>${e(article.category)}</span><span>${article.readingMinutes} 分钟阅读</span></div><h3>${e(article.title)}</h3><p>${e(article.excerpt)}</p></div><span class="row-arrow">${icon('arrow')}</span></a>`;
+const row = (article, company, filterable = false) => `<a class="article-row" href="${article.url}" ${filterable ? `data-type="${e(article.category)}" data-year="${e(article.year || 'undated')}" data-date="${e(article.date)}"` : ''}><div class="article-row-main"><div class="article-row-meta">${company ? `<span class="row-company">${e(company.name)}</span>` : ''}<span>${readableDate(article)}</span><span>${e(article.category)}</span><span>${article.readingMinutes} 分钟阅读</span></div><h3>${e(article.displayTitle)}</h3><p>${e(article.excerpt)}</p></div><span class="row-arrow">${icon('arrow')}</span></a>`;
 
 export function homePage(library, siteUrl) {
   const years = library.articles.map(a => a.year).filter(Boolean).sort();
@@ -100,10 +100,10 @@ export function articlePage(library, article, siteUrl) {
   const index = company.articles.findIndex(a => a.id === article.id);
   const prev = company.articles[index - 1], next = company.articles[index + 1];
   const content = `<div class="page-content article-page"><nav class="breadcrumb" aria-label="面包屑"><a href="/">知识库</a><span>/</span><a href="${companyUrl(company)}">${e(company.name)}</a><span>/</span><span>文章</span></nav>
-    <header class="article-header"><div class="article-meta"><a href="${companyUrl(company)}">${e(company.name)}</a><span>${e(article.category)}</span></div><h1 class="article-title">${e(article.title)}</h1><div class="article-byline"><span>${readableDate(article)}</span>${company.person ? `<span>相关人物 ${e(company.person)}</span>` : ''}<span>${article.wordCount.toLocaleString('zh-CN')} 字</span><span>约 ${article.readingMinutes} 分钟</span></div><div class="article-actions"><a class="back-link" href="${companyUrl(company)}">${icon('chevron')}公司文章</a><button class="copy-link">${icon('link')}<span>复制链接</span></button></div></header>
+    <header class="article-header"><div class="article-meta"><a href="${companyUrl(company)}">${e(company.name)}</a><span>${e(article.category)}</span></div><h1 class="article-title">${e(article.displayTitle)}</h1><div class="article-byline"><span>${readableDate(article)}</span>${company.person ? `<span>相关人物 ${e(company.person)}</span>` : ''}<span>${article.wordCount.toLocaleString('zh-CN')} 字</span><span>约 ${article.readingMinutes} 分钟</span></div><div class="article-actions"><a class="back-link" href="${companyUrl(company)}">${icon('chevron')}公司文章</a><button class="copy-link">${icon('link')}<span>复制链接</span></button></div></header>
     <div class="article-layout"><article class="prose" id="article-body">${article.html}</article>${article.toc.length ? `<aside class="article-toc" aria-label="文章章节"><p class="toc-title">本文目录</p><nav>${article.toc.map(item => `<a href="#${e(item.id)}" data-level="${item.level}">${e(item.title)}</a>`).join('')}</nav></aside>` : ''}</div>
-    <nav class="article-pagination" aria-label="相邻文章">${prev ? `<a class="prev" href="${prev.url}"><small>上一篇</small><span>${e(prev.title)}</span></a>` : '<span></span>'}${next ? `<a class="next" href="${next.url}"><small>下一篇</small><span>${e(next.title)}</span></a>` : '<span></span>'}</nav>${pageFooter()}</div>`;
-  return layout(library, { title: article.title, description: article.excerpt, content, company, article, pageType: 'article', siteUrl });
+    <nav class="article-pagination" aria-label="相邻文章">${prev ? `<a class="prev" href="${prev.url}"><small>上一篇</small><span>${e(prev.displayTitle)}</span></a>` : '<span></span>'}${next ? `<a class="next" href="${next.url}"><small>下一篇</small><span>${e(next.displayTitle)}</span></a>` : '<span></span>'}</nav>${pageFooter()}</div>`;
+  return layout(library, { title: article.displayTitle, description: article.excerpt, content, company, article, pageType: 'article', siteUrl });
 }
 
 export function notFoundPage(library, siteUrl) {
