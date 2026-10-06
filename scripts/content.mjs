@@ -34,6 +34,34 @@ const comparePath = (a, b) => (a < b ? -1 : a > b ? 1 : 0);
 const normalizeText = (value) => value.replace(/\s+/g, ' ').trim();
 const normalizeTitle = (value) => normalizeText(value).replace(/[“”‘’]/g, '"');
 
+function articleMetadata(raw, sourcePath) {
+  const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/);
+  if (!match) return { body: raw, metadata: {} };
+  const metadata = {};
+  const fields = new Set(['title', 'date', 'dateLabel', 'category', 'summary', 'collection']);
+  for (const line of match[1].split(/\r?\n/)) {
+    if (!line.trim() || line.trimStart().startsWith('#')) continue;
+    const field = line.match(/^([A-Za-z][A-Za-z0-9]*):\s*(".*")\s*$/);
+    if (!field || !fields.has(field[1]) || Object.hasOwn(metadata, field[1])) {
+      throw new Error(`${sourcePath}: 文章元数据必须使用已支持字段和 JSON 双引号字符串。`);
+    }
+    const value = JSON.parse(field[2]);
+    if (typeof value !== 'string') throw new Error(`${sourcePath}: ${field[1]} 必须是字符串。`);
+    metadata[field[1]] = value;
+  }
+  if (Object.hasOwn(metadata, 'date') && metadata.date) {
+    const date = metadata.date;
+    const validFormat = /^(?:19|20)\d{2}(?:-(?:0[1-9]|1[0-2])(?:-(?:0[1-9]|[12]\d|3[01]))?)?$/.test(date);
+    if (!validFormat || (date.length === 10 && fullDate(date) !== date)) {
+      throw new Error(`${sourcePath}: date 必须是有效的 YYYY、YYYY-MM 或 YYYY-MM-DD。`);
+    }
+  }
+  if (metadata.category && !['演讲', '访谈', '随笔', '报道', '讲话', '业绩会'].includes(metadata.category)) {
+    throw new Error(`${sourcePath}: 未支持的文章类型 ${metadata.category}。`);
+  }
+  return { body: raw.slice(match[0].length), metadata };
+}
+
 async function markdownFiles(directory) {
   const entries = (await readdir(directory, { withFileTypes: true }))
     .filter((entry) => !entry.name.startsWith('.'))
@@ -97,8 +125,8 @@ function fullDate(value) {
   return !Number.isNaN(parsed.valueOf()) && parsed.toISOString().startsWith(iso) ? iso : '';
 }
 
-function datedTitle(title, date, person) {
-  const dateLabel = date.length === 10 ? date.replaceAll('-', '.') : date ? `${date}年` : '日期未注明';
+function datedTitle(title, date, person, explicitDateLabel = '') {
+  const dateLabel = explicitDateLabel || (date.length >= 7 ? date.replaceAll('-', '.') : date ? `${date}年` : '日期未注明');
   const personPrefix = person && title.startsWith(person) ? person : '';
   const remainder = title.slice(personPrefix.length);
   // Move a matching source year to the front without changing dates in the subject.
@@ -288,18 +316,20 @@ export async function readLibrary(root = process.cwd()) {
     for (const file of files) {
       const sourcePath = path.relative(root, file).split(path.sep).join('/');
       const raw = await readFile(file, 'utf8');
-      const tokens = markdown.parse(raw, {});
-      const title = articleTitle(tokens, path.basename(file), company.person);
-      const date = articleDate(raw, sourcePath, tokens);
+      const { body, metadata } = articleMetadata(raw, sourcePath);
+      const tokens = markdown.parse(body, {});
+      const title = metadata.title || articleTitle(tokens, path.basename(file), company.person);
+      const date = Object.hasOwn(metadata, 'date') ? metadata.date : articleDate(body, sourcePath, tokens);
       const text = tokens.filter((token) => token.type === 'inline' || token.type === 'fence' || token.type === 'code_block')
         .map(inlineText).filter(Boolean).join('\n\n');
       const wordCount = (text.match(/[\p{Script=Han}]|[A-Za-z\d]+(?:['’-][A-Za-z\d]+)*/gu) || []).length;
       const id = hash(sourcePath).slice(0, 12);
       const prepared = headingAnchors(tokens, title);
       const article = {
-        id, companyId: company.id, title, displayTitle: datedTitle(title, date, company.person), date, year: date.slice(0, 4),
-        category: articleCategory(title, raw, sourcePath),
-        excerpt: excerptFrom(tokens, title, company.person),
+        id, companyId: company.id, title, displayTitle: datedTitle(title, date, company.person, metadata.dateLabel), date, year: date.slice(0, 4),
+        dateLabel: metadata.dateLabel || '', collection: metadata.collection || '',
+        category: metadata.category || articleCategory(title, body, sourcePath),
+        excerpt: metadata.summary || excerptFrom(tokens, title, company.person),
         readingMinutes: Math.max(1, Math.ceil(wordCount / 500)),
         wordCount, sourcePath, url: `/articles/${id}/`, html: '', text,
         toc: prepared.toc, imageCount: 0,

@@ -166,14 +166,14 @@ async function search() {
     if (revision !== searchRevision) return;
     const terms = [...new Set(query.toLocaleLowerCase().split(/\s+/))];
     const matches = index.map(article => {
-      const meta = `${article.title} ${article.company} ${article.person} ${article.category} ${article.date}`.toLocaleLowerCase();
+      const meta = `${article.title} ${article.company} ${article.person} ${article.category} ${article.date} ${article.dateLabel || ''}`.toLocaleLowerCase();
       const full = `${meta} ${article.text}`.toLocaleLowerCase();
       if (!terms.every(term => full.includes(term))) return null;
       const score = terms.reduce((sum, term) => sum + (article.title.toLocaleLowerCase().includes(term) ? 10 : 0) + (meta.includes(term) ? 3 : 0), 0);
       return { article, score };
     }).filter(Boolean).sort((a, b) => b.score - a.score);
     status.textContent = `找到 ${matches.length} 篇相关文章`;
-    results.innerHTML = matches.length ? matches.map(({ article }) => `<a class="search-result" href="${escapeHtml(article.url)}"><div class="search-result-meta"><span>${escapeHtml(article.company)}</span><span>${escapeHtml(article.date || '日期未注明')}</span><span>${escapeHtml(article.category)}</span></div><h3>${highlight(article.title, terms)}</h3><p>${highlight(snippet(article, terms), terms)}</p></a>`).join('') : '<div class="search-empty"><p>没有找到相关文章</p><span>试试公司名、人名，或换一个更简短的关键词。</span></div>';
+    results.innerHTML = matches.length ? matches.map(({ article }) => `<a class="search-result" href="${escapeHtml(article.url)}"><div class="search-result-meta"><span>${escapeHtml(article.company)}</span><span>${escapeHtml(article.dateLabel || article.date || '日期未注明')}</span><span>${escapeHtml(article.category)}</span></div><h3>${highlight(article.title, terms)}</h3><p>${highlight(snippet(article, terms), terms)}</p></a>`).join('') : '<div class="search-empty"><p>没有找到相关文章</p><span>试试公司名、人名，或换一个更简短的关键词。</span></div>';
     results.scrollTop = 0;
     lastResolvedQuery = query;
   } catch {

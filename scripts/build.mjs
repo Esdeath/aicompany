@@ -73,6 +73,7 @@ export async function build() {
       date: article.date,
       category: article.category,
       excerpt: article.excerpt,
+      dateLabel: article.dateLabel,
       text: article.text,
     }));
     await writeFile(path.join(staging, 'search-index.json'), JSON.stringify(searchIndex));

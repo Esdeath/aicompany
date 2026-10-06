@@ -27,7 +27,7 @@ const companyYears = company => {
   if (!years.length) return '资料整理';
   return years[0] === years.at(-1) ? `${years[0]} 年` : `${years[0]}—${years.at(-1)}`;
 };
-const readableDate = article => article.date?.length === 10 ? article.date.replaceAll('-', '.') : article.year ? `${article.year} 年` : '日期未注明';
+const readableDate = article => article.dateLabel || (article.date?.length >= 7 ? article.date.replaceAll('-', '.') : article.year ? `${article.year} 年` : '日期未注明');
 
 function sidebar(library, currentCompany, currentArticle) {
   return `<aside id="sidebar" class="sidebar" aria-label="知识库目录">

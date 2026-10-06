@@ -28,6 +28,27 @@ npm run preview   # 本地预览
 
 页面在构建时生成完整 HTML，全文索引只在搜索时加载。主题和字号设置仅保存在浏览器中。本地字体的授权见 `public/fonts/OFL.txt`。
 
+### 资料日期与来源
+
+新整理的公开资料可在 Markdown 开头使用元数据，明确区分活动、采访、录制与发布日期。各字段使用 JSON 双引号字符串；`date` 支持年、年月或完整日期，空字符串表示日期待核。`dateLabel` 会用于标题、列表和搜索结果，`category` 控制类型筛选。未使用元数据的原有文章继续按正文与文件名识别。
+
+```markdown
+---
+date: "2021"
+dateLabel: "2021年（录制）"
+category: "访谈"
+collection: "wang-public-52"
+---
+# 泡泡玛特凭什么？——对话王宁
+
+> 时间：2021年录制，2025年6月公开。
+> 来源：附原始节目链接。
+
+正文概述与主题要点……
+```
+
+王宁新增的 52 组资料位于 `company/泡泡玛特王宁/公开资料补充/`，按一组资料一篇文章收录。文章提供原创摘要、资料形态及来源入口；完整原文、视频或音频由链接访问。同场转载、切片和书摘合并，日期及独立采访场次尚未核定的内容明确标注。
+
 ## Cloudflare Pages 部署
 
 Cloudflare Pages 项目 `aicompany` 已连接 GitHub 仓库 [Esdeath/aicompany](https://github.com/Esdeath/aicompany)，生产分支为 `main`。推送到 `main` 后自动构建和发布。
