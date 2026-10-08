@@ -34,31 +34,19 @@ npm run preview   # 本地预览
 
 ```markdown
 ---
-date: "2021"
-dateLabel: "2021年（录制）"
+date: "2025-01-17"
+dateLabel: "2025.01.17（发布）"
 category: "访谈"
-collection: "wang-public-52"
-sourceTitle: "泡泡玛特凭什么？——对话王宁"
-sourceName: "大武"
-sourceUrl: "https://www.xiaoyuzhoufm.com/episode/68504d514abe6e29cb7745ad"
-sourceForm: "audio"
-sourceStatus: "original"
-sourcePublished: "2025-06"
-sourceNote: "节目方原始音频；2021年录制、2025年公开，未提供完整逐字稿。"
 ---
-# 泡泡玛特凭什么？——对话王宁
+# 文章标题
 
-> 时间：2021年录制，2025年6月公开。
-> 来源：附原始节目链接。
+> 时间：2025年1月17日发布。
+> 来源：注明作者或发布媒体，并附原始资料链接。
 
-正文概述与主题要点……
+文章正文……
 ```
 
-王宁新增的 52 组资料位于 `company/泡泡玛特王宁/公开资料补充/`，按一组资料一篇文章收录。文章提供原创摘要、资料形态及来源入口；完整原文、视频或音频由链接访问。同场转载、切片和书摘合并，日期及独立采访场次尚未核定的内容明确标注。
-
-每篇资料页在导读之前显示原始资料入口。`sourceStatus` 使用 `original`（原媒体／主办方／节目原站）、`author_republish`（作者公开稿）或 `reprint_only`（首发待核、现存转载）；`sourceForm` 使用 `full_text`（已发表文字稿）、`excerpt`（精选／节选）、`report_excerpt`（报道／发言摘录）、`video`、`audio` 或 `book`。`sourcePublished` 记录所链接稿件的发表日期，与文章的活动／录制日期分开。来源与完整性分别标注：原媒体发布的报道不等于整场会议逐字稿，也不代表已取得最初的采访录音。
-
-逐条来源核查记录见 `data/wang-public-sources.json`。目前站内仍是导读，没有把外部受版权保护的全文复制进仓库；收到原文文件或取得适用的转载许可后，才导入相应全文。来源核查记录不代表全文转载授权。
+需要原始资料入口的导读可配置 `sourceTitle`、`sourceName`、`sourceUrl`、`sourceForm`、`sourceStatus`、`sourcePublished` 和 `sourceNote`。`sourceStatus` 使用 `original`（原站来源）、`author_republish`（作者公开稿）或 `reprint_only`（现存转载）；`sourceForm` 使用 `full_text`、`excerpt`、`report_excerpt`、`video`、`audio` 或 `book`。`sourcePublished` 是来源稿件的发表日期，与活动／录制日期分开。未配置来源入口的文章直接显示正文。
 
 ## Cloudflare Pages 部署
 
