@@ -236,18 +236,8 @@ kbd { padding: 2px 4px; border: 1px solid var(--line); border-radius: 3px; font-
 .page-footer p { margin: 0; }
 .mobile-topbar, .mobile-backdrop { display: none; }
 
-/* Cover, company shelf and article archive. */
-.book-cover { padding: 40px 0 45px; margin-bottom: 31px; text-align: center; }
-.cover-accent-line { width: 74px; height: 2px; margin: 0 auto 24px; background: var(--accent); }
+/* Company shelf and article archive. */
 .cover-subtitle { margin: 0; font-family: var(--reading); font-size: 14px; line-height: 1.8; letter-spacing: 0.08em; color: var(--subtle); }
-.cover-title { margin: 15px 0 18px; font-family: var(--serif); font-size: clamp(34px, 3.8vw, 44px); font-weight: 700; line-height: 1.35; letter-spacing: 0.15em; }
-.cover-description { max-width: 36em; margin: 0 auto; font-family: var(--reading); color: var(--muted); font-size: 17px; line-height: 1.9; }
-.cover-meta { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 9px 22px; margin-top: 23px; color: var(--subtle); font-size: 12px; line-height: 1.5; }
-.cover-meta > span + span { padding-left: 22px; border-left: 1px solid var(--line); }
-.cover-meta strong { margin-right: 4px; color: var(--accent); font-family: var(--serif); font-size: 20px; font-weight: 600; }
-.cover-search { display: inline-flex; align-items: center; justify-content: center; gap: 9px; margin-top: 25px; min-height: 38px; padding: 8px 15px; border: 1px solid var(--line); font-size: 12px; color: var(--muted); transition: background 0.2s, border-color 0.2s; }
-.cover-search svg { width: 15px; height: 15px; }
-.cover-search:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
 .section-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 14px; margin-bottom: 21px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
 .section-heading h2 { margin: 0; font-family: var(--reading); font-size: 20px; font-weight: 700; line-height: 1.5; letter-spacing: 0.03em; }
 .section-note { color: var(--subtle); font-size: 11px; font-weight: 400; line-height: 1.6; }
@@ -463,15 +453,6 @@ kbd { padding: 2px 4px; border: 1px solid var(--line); border-radius: 3px; font-
   .page-content { padding: 23px 20px 30px; }
   .page-topline { margin-bottom: 6px; }
   .edition-note { display: none; }
-  .book-cover { padding: 29px 0 32px; margin-bottom: 23px; }
-  .cover-accent-line { width: 62px; margin-bottom: 20px; }
-  .cover-subtitle { font-size: 12px; }
-  .cover-title { margin-block: 14px; font-size: 32px; letter-spacing: 0.12em; }
-  .cover-description { font-size: 16px; line-height: 1.85; }
-  .cover-meta { gap: 8px 14px; font-size: 11px; }
-  .cover-meta > span + span { padding-left: 14px; }
-  .cover-meta strong { font-size: 18px; }
-  .cover-search { margin-top: 21px; }
   .section-heading { margin-bottom: 16px; padding-bottom: 12px; }
   .section-heading h2 { font-size: 19px; }
   .section-note { font-size: 10px; }
