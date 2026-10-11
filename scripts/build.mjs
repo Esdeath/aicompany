@@ -7,6 +7,7 @@ import { homePage, aboutPage, companyPage, articlePage, notFoundPage, resolveSit
 
 export const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 export const output = path.join(root, 'dist');
+const siteName = '企业知识库';
 
 async function collectFiles(directory, prefix = '') {
   let entries;
