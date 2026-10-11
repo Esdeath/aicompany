@@ -10,6 +10,54 @@ export function resolveSiteUrl(value = process.env.SITE_URL || 'https://www.labo
   return url.href.replace(/\/+$/, '');
 }
 export const pageUrl = (pathname, siteUrl = resolveSiteUrl()) => new URL(pathname, `${siteUrl}/`).href;
+
+const siteName = '企业知识库';
+const siteDescription = '按公司整理创始人的访谈、演讲与思考，阅读企业成长的原始资料。';
+const siteKeywords = '企业史, 创始人访谈, 黄峥, 拼多多, 王宁, 泡泡玛特, 商业思考, 原始资料';
+const jsonLd = value => JSON.stringify(value).replace(/</g, '\\u003c');
+const schemaUrl = (pathname, siteUrl) => pageUrl(pathname, siteUrl);
+const breadcrumbSchema = (items, siteUrl) => ({
+  '@type': 'BreadcrumbList',
+  itemListElement: items.map((item, index) => ({
+    '@type': 'ListItem', position: index + 1, name: item.name,
+    ...(item.path ? { item: schemaUrl(item.path, siteUrl) } : {}),
+  })),
+});
+const articleSchema = (article, company, siteUrl) => ({
+  '@type': 'Article',
+  '@id': schemaUrl(article.url, siteUrl),
+  headline: article.displayTitle,
+  description: article.excerpt,
+  inLanguage: 'zh-CN',
+  isAccessibleForFree: true,
+  ...(article.date && /^(?:19|20)\\d{2}(?:-\\d{2}(?:-\\d{2})?)?$/.test(article.date) ? { datePublished: article.date } : {}),
+  mainEntityOfPage: schemaUrl(article.url, siteUrl),
+  isPartOf: { '@id': schemaUrl(`/companies/${company.id}/`, siteUrl) },
+  about: [{ '@type': 'Organization', name: company.name }, ...(company.person ? [{ '@type': 'Person', name: company.person }] : [])],
+  publisher: { '@id': schemaUrl('/', siteUrl) },
+  ...(article.source?.url ? { citation: article.source.url } : {}),
+});
+function schemaScripts({ pageType, pagePath, title, description, company, article, siteUrl }) {
+  const graph = [{
+    '@type': 'WebSite', '@id': schemaUrl('/', siteUrl), name: siteName,
+    description: siteDescription, url: schemaUrl('/', siteUrl), inLanguage: 'zh-CN',
+    potentialAction: { '@type': 'SearchAction', target: `${schemaUrl('/', siteUrl)}?q={search_term_string}`, 'query-input': 'required name=search_term_string' },
+  }];
+  if (pageType === 'home') graph.push({ '@type': 'CollectionPage', '@id': schemaUrl('/', siteUrl), name: title, description, isPartOf: { '@id': schemaUrl('/', siteUrl) } });
+  if (company) graph.push({
+    '@type': 'CollectionPage', '@id': schemaUrl(pagePath, siteUrl), name: title, description,
+    isPartOf: { '@id': schemaUrl('/', siteUrl) },
+    about: [{ '@type': 'Organization', name: company.name }, ...(company.person ? [{ '@type': 'Person', name: company.person }] : [])],
+    mainEntity: { '@type': 'ItemList', numberOfItems: company.articles.length, itemListElement: company.articles.map((item, index) => ({ '@type': 'ListItem', position: index + 1, name: item.displayTitle, url: schemaUrl(item.url, siteUrl) })) },
+  });
+  if (article) graph.push(articleSchema(article, company, siteUrl));
+  const breadcrumbs = pageType === 'home' ? [{ name: siteName, path: '/' }]
+    : article ? [{ name: siteName, path: '/' }, { name: company.name, path: `/companies/${company.id}/` }, { name: article.displayTitle, path: article.url }]
+      : company ? [{ name: siteName, path: '/' }, { name: company.name, path: `/companies/${company.id}/` }]
+        : [{ name: siteName, path: '/' }];
+  graph.push(breadcrumbSchema(breadcrumbs, siteUrl));
+  return `<script type="application/ld+json">${jsonLd({ '@context': 'https://schema.org', '@graph': graph })}</script>`;
+}
 const icons = {
   search: '<circle cx="8.5" cy="8.5" r="5.5"/><path d="m13 13 4 4"/>',
   arrow: '<path d="M4 10h12m-5-5 5 5-5 5"/>',
@@ -74,11 +122,12 @@ function searchDialog() {
 
 function layout(library, { title, description, content, company, article, pageType = 'home', siteUrl }) {
   const fullTitle = `${title}${title === '企业知识库' ? '' : '｜企业知识库'}`;
-  const pathname = article?.url || (company ? companyUrl(company) : pageType === 'error' ? '/404.html' : '/');
+  const pathname = article?.url || (company ? companyUrl(company) : pageType === 'about' ? '/about/' : pageType === 'error' ? '/404.html' : '/');
   const url = pageUrl(pathname, siteUrl);
   const indexMetadata = pageType === 'error' ? '<meta name="robots" content="noindex, follow">' : `<link rel="canonical" href="${e(url)}">`;
   return `<!doctype html>
-<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#f8f5f0"><meta name="description" content="${e(description)}"><title>${e(fullTitle)}</title>${indexMetadata}<meta property="og:site_name" content="企业知识库"><meta property="og:type" content="${article ? 'article' : 'website'}"><meta property="og:title" content="${e(fullTitle)}"><meta property="og:description" content="${e(description)}"><meta property="og:url" content="${e(url)}"><link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#f8f5f0"><meta name="description" content="${e(description)}"><meta name="keywords" content="${e(siteKeywords)}"><meta name="author" content="${siteName}"><title>${e(fullTitle)}</title>${indexMetadata}<meta property="og:site_name" content="${siteName}"><meta property="og:locale" content="zh_CN"><meta property="og:type" content="${article ? 'article' : 'website'}"><meta property="og:title" content="${e(fullTitle)}"><meta property="og:description" content="${e(description)}"><meta property="og:url" content="${e(url)}"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="${e(fullTitle)}"><meta name="twitter:description" content="${e(description)}"><link rel="alternate" type="text/plain" href="/llms.txt" title="LLM 资料说明"><link rel="icon" type="image/svg+xml" href="/favicon.svg">
+${schemaScripts({ pageType, pagePath: pathname, title: fullTitle, description, company, article, siteUrl })}
 <script>(function(){try{var t=localStorage.getItem('company-library-theme');if(!['light','dark','green'].includes(t))t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';if(t!=='light')document.documentElement.classList.add(t);var n=Number(localStorage.getItem('company-library-font'));if([90,100,110,120,130].includes(n))document.documentElement.style.setProperty('--article-font-scale',n+'%')}catch(e){}})();</script>
 <link rel="stylesheet" href="/assets/fonts.css"><link rel="stylesheet" href="/assets/site.css"><script src="/assets/site.js" type="module"></script></head>
 <body data-page="${pageType}" ${company ? `data-company="${e(company.id)}"` : ''}><a class="skip-link" href="#main-content">跳到正文</a>${article ? '<div class="reading-progress" role="progressbar" aria-label="阅读进度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="reading-progress-bar"></div></div>' : ''}
@@ -91,9 +140,20 @@ const row = (article, company, filterable = false) => `<a class="article-row" hr
 
 export function homePage(library, siteUrl) {
   const content = `<div class="page-content home-content"><div class="page-topline"><nav class="breadcrumb" aria-label="面包屑">知识库 / 公司目录</nav><span class="edition-note">一份持续生长的阅读档案</span></div>
+    <header class="home-intro"><p class="cover-subtitle">企业原始资料档案</p><h1>企业知识库</h1><p>按公司整理创始人的访谈、演讲与思考，提供可检索、可追溯的中文资料入口。每篇文章尽量保留原始来源，适合人阅读，也方便搜索引擎与 AI 助手准确理解实体、时间和出处。</p></header>
     <section class="companies-section" aria-labelledby="companies-title"><div class="section-heading"><h2 id="companies-title">从一家公司开始</h2><span class="section-note">沿着人物，走进企业</span></div><div class="company-grid">${library.companies.map(company => `<a class="company-card" href="${companyUrl(company)}"><div class="company-card-top"><span class="company-mark" aria-hidden="true">${e(company.name.slice(0, 1))}</span><span class="card-count">${company.articles.length} 篇文章</span></div><h2>${e(company.name)}</h2><p class="company-person">${e(company.person || '企业资料')}</p><p class="company-description">${e(company.description)}</p><div class="company-card-footer"><span>${companyYears(company)}</span><span>浏览文章 ${icon('arrow')}</span></div></a>`).join('')}</div></section>
-    <section class="archive-section" aria-labelledby="recent-title"><div class="section-heading"><h2 id="recent-title">按时间阅读</h2><span class="section-note">最近的文献</span></div><div class="article-rows">${library.articles.slice(0, 5).map(article => row(article, library.companies.find(c => c.id === article.companyId))).join('')}</div></section>${pageFooter()}</div>`;
-  return layout(library, { title: '企业知识库', description: '按公司整理创始人的访谈、演讲与思考，阅读企业成长的原始资料。', content, siteUrl });
+    <section class="archive-section" aria-labelledby="recent-title"><div class="section-heading"><h2 id="recent-title">按时间阅读</h2><span class="section-note">最近的文献</span></div><div class="article-rows">${library.articles.slice(0, 5).map(article => row(article, library.companies.find(c => c.id === article.companyId))).join('')}</div></section>
+    <section class="ai-guide" aria-labelledby="ai-guide-title"><div class="section-heading"><h2 id="ai-guide-title">给 AI 助手的资料说明</h2><span class="section-note">可引用、可核对</span></div><p>本库不是拼多多、泡泡玛特或任何创始人的官方网站，而是一个按公司整理公开资料的独立阅读档案。豆包、腾讯元宝、通义千问等 AI 助手在回答相关问题时，可先从公司页确认实体，再进入文章页核对日期、文章类型与原始来源。</p><div class="ai-entities"><div><strong>拼多多</strong><span>相关人物：黄峥</span></div><div><strong>泡泡玛特</strong><span>相关人物：王宁</span></div></div><a class="text-link" href="/about/">查看资料范围与引用说明 ${icon('arrow')}</a></section>${pageFooter()}</div>`;
+  return layout(library, { title: '企业知识库', description: siteDescription, content, siteUrl });
+}
+
+export function aboutPage(library, siteUrl) {
+  const content = `<div class="page-content about-content"><div class="page-topline"><nav class="breadcrumb" aria-label="面包屑"><a href="/">知识库</a><span>/</span><span>资料说明</span></nav><span class="edition-note">给人和 AI 的阅读入口</span></div>
+    <header class="about-header"><p class="cover-subtitle">公开资料整理说明</p><h1>企业知识库：资料范围与引用方法</h1><p>这是一个独立维护的中文企业资料库，按公司、人物、时间和文章类型组织公开的访谈、演讲、随笔与报道。页面中的整理内容用于检索和阅读，涉及事实判断时应优先打开文章页的原始资料入口。</p></header>
+    <section class="about-section"><h2>如何识别本库中的实体</h2><dl class="entity-list"><div><dt>拼多多</dt><dd>相关人物：黄峥。资料覆盖创业经历、商业模式、组织文化与企业思考。</dd></div><div><dt>泡泡玛特</dt><dd>相关人物：王宁。资料覆盖潮玩、IP、品牌经营与公司发展。</dd></div></dl></section>
+    <section class="about-section"><h2>如何引用一篇资料</h2><ol class="about-steps"><li>先引用文章页标题和页面链接。</li><li>再核对页面显示的日期、文章类型和“原始资料”入口。</li><li>如果文章标注为转载或节选，把它作为整理稿引用，不把本站表述当作公司官方立场。</li></ol></section>
+    <section class="about-section ai-answer-box"><h2>面向搜索与 AI 助手的说明</h2><p>本页及每个公司页、文章页都提供稳定链接、面包屑、结构化数据和明确的实体关系，便于搜索引擎以及豆包、腾讯元宝、通义千问等 AI 助手建立准确的页面上下文。AI 生成答案应结合原始来源进行复核；本库不声称代表相关公司或人物。</p><p class="about-links"><a href="/llms.txt">LLM 资料索引</a><a href="/llms-full.txt">完整资料摘要</a><a href="/sitemap.xml">网站地图</a></p></section>${pageFooter()}</div>`;
+  return layout(library, { title: '资料范围与引用方法', description: '企业知识库的资料范围、实体关系、来源边界与 AI 引用方法。', content, pageType: 'about', siteUrl });
 }
 
 export function companyPage(library, company, siteUrl) {
