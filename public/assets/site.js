@@ -262,12 +262,28 @@ if (document.body.dataset.page === 'article') {
   $('.copy-link').addEventListener('click', async event => {
     const label = event.currentTarget.querySelector('span');
     try {
-      await navigator.clipboard.writeText(location.href);
+      const title = $('.article-title').textContent.trim();
+      const body = $('#article-body').innerText.trim();
+      const copyText = [title, `文章链接：${location.href}`, body].filter(Boolean).join('\n\n');
+      await navigator.clipboard.writeText(copyText);
       label.textContent = '已复制';
     } catch {
-      label.textContent = '请复制地址栏链接';
+      label.textContent = '复制失败，请重试';
     }
-    setTimeout(() => label.textContent = '复制链接', 2200);
+    setTimeout(() => label.textContent = '复制文章', 2200);
+  });
+  $('#article-body').addEventListener('copy', event => {
+    const selection = window.getSelection();
+    if (!selection || selection.isCollapsed || !selection.rangeCount) return;
+    const range = selection.getRangeAt(0);
+    if (!$('#article-body').contains(range.commonAncestorContainer)) return;
+
+    const selectedText = selection.toString().trim();
+    if (!selectedText) return;
+    const title = $('.article-title').textContent.trim();
+    const link = `文章链接：${location.href}`;
+    event.preventDefault();
+    event.clipboardData.setData('text/plain', [title, link, selectedText].join('\n\n'));
   });
   if (location.hash) requestAnimationFrame(() => {
     try { document.getElementById(decodeURIComponent(location.hash.slice(1)))?.scrollIntoView(); } catch {}
