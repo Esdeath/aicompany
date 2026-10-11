@@ -226,6 +226,27 @@ kbd { padding: 2px 4px; border: 1px solid var(--line); border-radius: 3px; font-
 .main-area { position: relative; min-width: 0; height: 100%; overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth; }
 #main-content { min-height: 100%; }
 .page-content { width: 100%; max-width: 1056px; margin: 0 auto; padding: 30px 48px 40px; }
+.home-intro, .about-header { max-width: 760px; padding: 28px 0 34px; }
+.home-intro h1, .about-header h1 { max-width: 760px; margin: 10px 0 15px; font-family: var(--reading); font-size: clamp(38px, 5vw, 64px); font-weight: 700; letter-spacing: -0.03em; line-height: 1.1; }
+.home-intro > p:last-child, .about-header > p:last-child { max-width: 680px; margin: 0; color: var(--muted); font-size: 16px; line-height: 1.9; }
+.ai-guide, .about-section { margin-top: 54px; padding-top: 28px; border-top: 1px solid var(--line); }
+.ai-guide p, .about-section p { max-width: 760px; margin: 0 0 18px; color: var(--muted); font-size: 15px; line-height: 1.9; }
+.ai-entities { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; max-width: 680px; margin: 22px 0; }
+.ai-entities div { display: flex; flex-direction: column; gap: 5px; padding: 15px 16px; border: 1px solid var(--line); background: var(--surface); }
+.ai-entities strong { font-family: var(--reading); font-size: 21px; }
+.ai-entities span { color: var(--subtle); font-size: 12px; }
+.text-link { display: inline-flex; align-items: center; gap: 7px; color: var(--accent); font-size: 13px; }
+.text-link svg { width: 15px; height: 15px; }
+.about-content { max-width: 900px; }
+.about-section h2 { margin: 0 0 18px; font-family: var(--reading); font-size: 25px; }
+.entity-list { max-width: 760px; margin: 0; }
+.entity-list > div { display: grid; grid-template-columns: 130px minmax(0, 1fr); gap: 18px; padding: 15px 0; border-bottom: 1px solid var(--line); }
+.entity-list dt { font-family: var(--reading); font-size: 20px; font-weight: 700; }
+.entity-list dd { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.8; }
+.about-steps { max-width: 700px; margin: 0; padding-left: 24px; color: var(--muted); font-size: 14px; line-height: 2; }
+.ai-answer-box { padding: 23px; border: 1px solid var(--line); background: var(--surface); }
+.ai-answer-box .about-links { display: flex; flex-wrap: wrap; gap: 16px; margin: 22px 0 0; }
+.ai-answer-box .about-links a { color: var(--accent); font-size: 13px; text-decoration: underline; text-decoration-color: var(--accent-underline); text-underline-offset: 4px; }
 .page-topline { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 12px; }
 .breadcrumb { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; color: var(--subtle); font-size: 11px; line-height: 1.8; }
 .breadcrumb a:hover { color: var(--accent); }
