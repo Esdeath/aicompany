@@ -483,6 +483,14 @@ kbd { padding: 2px 4px; border: 1px solid var(--line); border-radius: 3px; font-
   .company-card h2 { font-size: 22px; }
   .company-description { margin-bottom: 17px; }
   .archive-section { margin-top: 33px; }
+  .home-intro, .about-header { padding: 20px 0 25px; }
+  .home-intro h1, .about-header h1 { font-size: 38px; }
+  .home-intro > p:last-child, .about-header > p:last-child { font-size: 14px; line-height: 1.85; }
+  .ai-guide, .about-section { margin-top: 36px; padding-top: 22px; }
+  .ai-guide p, .about-section p { font-size: 14px; }
+  .ai-entities { grid-template-columns: minmax(0, 1fr); }
+  .entity-list > div { grid-template-columns: 1fr; gap: 4px; }
+  .ai-answer-box { padding: 18px; }
   .article-row { gap: 13px; padding-block: 18px; }
   .article-row h3 { font-size: 18px; }
   .article-row-meta { gap: 4px 9px; font-size: 10px; }

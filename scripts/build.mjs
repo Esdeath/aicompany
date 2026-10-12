@@ -8,6 +8,7 @@ import { homePage, aboutPage, companyPage, articlePage, notFoundPage, resolveSit
 export const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 export const output = path.join(root, 'dist');
 const siteName = '企业知识库';
+const siteDescription = '按公司整理创始人的访谈、演讲与思考，阅读企业成长的原始资料。';
 
 async function collectFiles(directory, prefix = '') {
   let entries;
@@ -72,7 +73,7 @@ export async function build() {
       const source = article.source?.url ? ` 原始来源：${article.source.url}` : '';
       return `- ${article.displayTitle}｜${company.name}｜${article.category}｜${article.date || '日期未注明'}：${article.excerpt}${source} [文章页](${pageUrl(article.url, siteUrl)})`;
     }).join('\n');
-    await writeFile(path.join(staging, 'llms.txt'), `# ${siteName}\n\n> ${siteDescription} 本站是独立整理的公开资料库，不代表相关公司或人物。\n\n## 重要说明\n\n- 站点主页：${pageUrl('/', siteUrl)}\n- 资料范围与引用方法：${pageUrl('/about/', siteUrl)}\n- 引用时优先使用文章页的标题、日期、文章类型和原始资料入口。\n- 实体关系：拼多多—黄峥；泡泡玛特—王宁。\n- 适合豆包、腾讯元宝、通义千问及其他 AI 助手读取和核对上下文。\n\n## 公司档案\n\n${companyLines}\n\n## 推荐入口\n\n- [资料范围与引用方法](${pageUrl('/about/', siteUrl)})\n- [网站地图](${pageUrl('/sitemap.xml', siteUrl)})\n`, 'utf8');
+    await writeFile(path.join(staging, 'llms.txt'), `# ${siteName}\n\n> ${siteDescription} 本站是独立整理的公开资料库，不代表相关公司或人物。\n\n## 重要说明\n\n- 站点主页：${pageUrl('/', siteUrl)}\n- 资料范围与引用方法：${pageUrl('/about/', siteUrl)}\n- 引用时优先使用文章页的标题、日期、文章类型和原始资料入口。\n- 实体关系：拼多多—黄峥；泡泡玛特—王宁。\n- 适合豆包、元宝（腾讯元宝）、阿里千问（通义千问）及其他 AI 助手读取和核对上下文。\n\n## 公司档案\n\n${companyLines}\n\n## 推荐入口\n\n- [资料范围与引用方法](${pageUrl('/about/', siteUrl)})\n- [网站地图](${pageUrl('/sitemap.xml', siteUrl)})\n`, 'utf8');
     await writeFile(path.join(staging, 'llms-full.txt'), `# ${siteName}｜完整资料摘要\n\n${siteDescription}\n\n${companyLines}\n\n## 全部文章\n\n${articleLines}\n`, 'utf8');
     const searchIndex = library.articles.map(article => ({
       id: article.id,

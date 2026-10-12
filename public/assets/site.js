@@ -192,6 +192,12 @@ function openSearch() {
 function closeSearch() { dialog.close(); }
 $$('[data-open-search]').forEach(button => button.addEventListener('click', openSearch));
 $('.search-close').addEventListener('click', closeSearch);
+const initialSearchQuery = new URLSearchParams(location.search).get('q')?.trim();
+if (initialSearchQuery) {
+  input.value = initialSearchQuery;
+  openSearch();
+  search();
+}
 dialog.addEventListener('close', () => searchTrigger?.focus());
 dialog.addEventListener('click', event => {
   const rect = dialog.getBoundingClientRect();
