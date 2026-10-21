@@ -384,6 +384,39 @@ kbd { padding: 2px 4px; border: 1px solid var(--line); border-radius: 3px; font-
 .prose sup, .prose sub { font-size: 0.7em; line-height: 0; }
 .prose .footnotes { margin-top: 3em; font-size: 0.83em; color: var(--muted); }
 .prose .footnotes hr { width: 100%; }
+
+/* Reports keep source page anchors while the reading outline follows actual chapters. */
+.report-page { max-width: 1240px; }
+.report-prose { line-height: 2; }
+.report-prose h2 { margin-top: 2.4em; padding-top: 1em; font-size: 1.35em; }
+.report-prose h3 { margin-top: 1.8em; font-size: 1.08em; }
+.report-prose .report-page-marker { margin: 2.2em 0 0.2em; padding-top: 0.8em; border-top: 1px solid var(--line); color: var(--subtle); font-family: var(--sans); font-size: 11px; font-weight: 400; line-height: 1.6; }
+.report-prose .report-source-page { margin: 0 0 1.25em; font-family: var(--sans); font-size: 11px; line-height: 1.6; }
+.report-prose .report-source-page a { color: var(--subtle); }
+.report-prose .report-running { margin: 0.7em 0 1.2em; color: var(--subtle); font-family: var(--sans); font-size: 11px; font-weight: 400; }
+.report-prose .report-folio { margin: 1em 0 0; color: var(--subtle); text-align: right; font-family: var(--sans); font-size: 11px; line-height: 1.6; }
+.report-prose table { margin: 1.5em 0 2em; border-radius: 0; font-size: 0.8em; line-height: 1.75; font-variant-numeric: tabular-nums lining-nums; letter-spacing: 0; }
+.report-prose th, .report-prose td { padding: 9px 14px; min-width: 5em; white-space: nowrap; }
+.report-prose th:first-child, .report-prose td:first-child { min-width: 10em; max-width: 24em; white-space: normal; }
+.report-prose tbody tr:nth-child(even) { background: var(--table-hover); }
+.report-prose pre { padding: 16px; border-radius: 0; border-color: var(--table-border); background: var(--table-bg); font-size: 0.78em; line-height: 1.8; font-variant-numeric: tabular-nums; letter-spacing: 0; }
+.report-prose img[alt^="原PDF第1页"] { width: auto; max-width: 100%; max-height: 320px; }
+.report-contents { display: none; margin: 0 0 28px; padding: 13px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.report-contents summary { color: var(--fg); cursor: pointer; font-family: var(--reading); font-size: 15px; }
+.report-contents summary:active { color: var(--accent); }
+.report-contents nav { display: grid; gap: 11px; max-height: 45vh; overflow-y: auto; margin-top: 17px; padding: 0 10px 6px 0; }
+.report-contents nav a { color: var(--muted); font-size: 13px; line-height: 1.7; text-decoration: none; }
+.report-contents nav a[data-level="3"] { padding-left: 1em; font-size: 12px; }
+.report-contents nav a:hover { color: var(--accent); }
+@media (max-width: 1199px) {
+  .report-contents { display: block; }
+}
+@media (max-width: 640px) {
+  .report-prose { font-size: 0.95em; }
+  .report-prose th, .report-prose td { padding: 8px 10px; }
+  .report-prose img[alt^="原PDF第1页"] { max-height: 240px; }
+}
+
 .article-toc { position: sticky; top: 29px; max-height: calc(100dvh - 80px); overflow-y: auto; padding-left: 15px; border-left: 1px solid var(--line); scrollbar-width: thin; }
 .toc-title { margin: 0 0 15px; color: var(--fg); font-size: 12px; font-weight: 500; }
 .article-toc nav { display: flex; flex-direction: column; gap: 8px; }

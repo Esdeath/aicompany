@@ -212,7 +212,7 @@ function excerptFrom(tokens, title, person) {
   return '';
 }
 
-function headingAnchors(tokens, title) {
+function headingAnchors(tokens, title, report = false) {
   const toc = [];
   const anchors = new Map();
   const used = new Map();
@@ -245,7 +245,11 @@ function headingAnchors(tokens, title) {
     used.set(base, count);
     const id = count === 1 ? base : `${base}-${count}`;
     token.attrSet('id', id);
-    toc.push({ id, title: heading, level: Number(token.tag.slice(1)) });
+    const level = Number(token.tag.slice(1));
+    if (!report || level <= 3) toc.push({ id, title: heading, level });
+    if (report && level === 6) {
+      token.attrSet('class', /^原PDF第\d+页$/.test(heading) ? 'report-page-marker' : 'report-running');
+    }
     const conventional = heading.toLowerCase().replace(/[^\p{L}\p{N}\s_-]/gu, '').replace(/\s+/g, '-');
     for (const candidate of [id, heading, conventional]) {
       if (!anchors.has(candidate)) anchors.set(candidate, id);
@@ -332,13 +336,22 @@ export async function readLibrary(root = process.cwd()) {
       const raw = await readFile(file, 'utf8');
       const { body, metadata } = articleMetadata(raw, sourcePath);
       const tokens = markdown.parse(body, {});
+      const report = metadata.category === '财报' && Boolean(metadata.collection);
+      if (report) {
+        for (let index = 0; index < tokens.length; index += 1) {
+          if (tokens[index].type !== 'paragraph_open') continue;
+          const value = inlineText(tokens[index + 1]).trim();
+          if (/^对照原PDF第\d+页$/.test(value)) tokens[index].attrSet('class', 'report-source-page');
+          else if (/^(?:\d+\s+泡泡玛特国际集团有限公司|二[零〇一二三四五六七八九]{3}年(?:年报|中报)\s+\d+)$/.test(value)) tokens[index].attrSet('class', 'report-folio');
+        }
+      }
       const title = metadata.title || articleTitle(tokens, path.basename(file), company.person);
       const date = Object.hasOwn(metadata, 'date') ? metadata.date : articleDate(body, sourcePath, tokens);
       const text = tokens.filter((token) => token.type === 'inline' || token.type === 'fence' || token.type === 'code_block')
         .map(inlineText).filter(Boolean).join('\n\n');
       const wordCount = (text.match(/[\p{Script=Han}]|[A-Za-z\d]+(?:['’-][A-Za-z\d]+)*/gu) || []).length;
       const id = hash(sourcePath).slice(0, 12);
-      const prepared = headingAnchors(tokens, title);
+      const prepared = headingAnchors(tokens, title, report);
       const article = {
         id, companyId: company.id, title, displayTitle: datedTitle(title, date, company.person, metadata.dateLabel), date, year: date.slice(0, 4),
         dateLabel: metadata.dateLabel || '', collection: metadata.collection || '',
@@ -350,7 +363,7 @@ export async function readLibrary(root = process.cwd()) {
         category: metadata.category || articleCategory(title, body, sourcePath),
         excerpt: metadata.summary || excerptFrom(tokens, title, company.person),
         readingMinutes: Math.max(1, Math.ceil(wordCount / 500)),
-        wordCount, sourcePath, url: `/articles/${id}/`, html: '', text,
+        wordCount, sourcePath, url: `/articles/${id}/`, html: '', text, report,
         toc: prepared.toc, imageCount: 0,
       };
       company.articles.push(article);
