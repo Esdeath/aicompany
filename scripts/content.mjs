@@ -14,7 +14,7 @@ const companyProfiles = {
     id: 'popmart',
     name: '泡泡玛特',
     person: '王宁',
-    description: '通过王宁的访谈、演讲与公司报道，了解潮玩、IP 与品牌经营。',
+    description: '通过王宁的访谈、演讲、公司报道与历年财报，了解潮玩、IP 与品牌经营。',
   },
 };
 
@@ -57,7 +57,7 @@ function articleMetadata(raw, sourcePath) {
       throw new Error(`${sourcePath}: ${field} 必须是有效的 YYYY、YYYY-MM 或 YYYY-MM-DD。`);
     }
   }
-  if (metadata.category && !['演讲', '访谈', '随笔', '报道', '讲话', '业绩会'].includes(metadata.category)) {
+  if (metadata.category && !['演讲', '访谈', '随笔', '报道', '讲话', '业绩会', '财报'].includes(metadata.category)) {
     throw new Error(`${sourcePath}: 未支持的文章类型 ${metadata.category}。`);
   }
   if (metadata.sourceUrl) {
