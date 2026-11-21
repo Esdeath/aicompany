@@ -16,6 +16,13 @@ const companyProfiles = {
     person: '王宁',
     description: '通过王宁的访谈、演讲、公司报道与历年财报，了解潮玩、IP 与品牌经营。',
   },
+  腾讯: {
+    id: 'tencent',
+    name: '腾讯',
+    person: '马化腾',
+    people: ['马化腾', '张小龙', '刘炽平'],
+    description: '从马化腾、张小龙、刘炽平的演讲与访谈，到 2004 年以来的年报与业绩电话会，理解腾讯的产品、投资与组织。',
+  },
 };
 
 const topicPatterns = [
@@ -38,7 +45,7 @@ function articleMetadata(raw, sourcePath) {
   const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/);
   if (!match) return { body: raw, metadata: {} };
   const metadata = {};
-  const fields = new Set(['title', 'date', 'dateLabel', 'category', 'summary', 'collection', 'sourceTitle', 'sourceName', 'sourceUrl', 'sourceForm', 'sourceStatus', 'sourceNote', 'sourcePublished']);
+  const fields = new Set(['title', 'date', 'dateLabel', 'category', 'summary', 'collection', 'sourceTitle', 'sourceName', 'sourceUrl', 'sourceForm', 'sourceStatus', 'sourceNote', 'sourcePublished', 'person']);
   for (const line of match[1].split(/\r?\n/)) {
     if (!line.trim() || line.trimStart().startsWith('#')) continue;
     const field = line.match(/^([A-Za-z][A-Za-z0-9]*):\s*(".*")\s*$/);
@@ -354,6 +361,7 @@ export async function readLibrary(root = process.cwd()) {
       const prepared = headingAnchors(tokens, title, report);
       const article = {
         id, companyId: company.id, title, displayTitle: datedTitle(title, date, company.person, metadata.dateLabel), date, year: date.slice(0, 4),
+        person: Object.hasOwn(metadata, 'person') ? metadata.person : company.person,
         dateLabel: metadata.dateLabel || '', collection: metadata.collection || '',
         source: metadata.sourceUrl ? {
           title: metadata.sourceTitle || title, name: metadata.sourceName || '',

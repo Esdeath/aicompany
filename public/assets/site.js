@@ -84,12 +84,15 @@ if (document.body.dataset.page === 'company') {
   const rows = [...list.querySelectorAll('.article-row')];
   const originalOrder = new Map(rows.map((row, index) => [row, index]));
   let type = 'all';
+  let person = 'all';
   function applyFilters() {
     const year = $('#year-filter').value;
     const direction = $('#sort-order').value === 'asc' ? -1 : 1;
     let count = 0;
     rows.forEach(row => {
-      row.hidden = (type !== 'all' && row.dataset.type !== type) || (year !== 'all' && row.dataset.year !== year);
+      row.hidden = (type !== 'all' && row.dataset.type !== type)
+        || (person !== 'all' && row.dataset.person !== person)
+        || (year !== 'all' && row.dataset.year !== year);
       if (!row.hidden) count++;
     });
     sections.sort((a, b) => {
@@ -105,9 +108,18 @@ if (document.body.dataset.page === 'company') {
     $('#result-count').textContent = `共 ${count} 篇文章`;
     $('.empty-state').hidden = count !== 0;
   }
-  $$('.filter-chip').forEach(button => button.addEventListener('click', () => {
+  $$('.type-filters .filter-chip').forEach(button => button.addEventListener('click', () => {
     type = button.dataset.type;
-    $$('.filter-chip').forEach(chip => {
+    $$('.type-filters .filter-chip').forEach(chip => {
+      const active = chip === button;
+      chip.classList.toggle('active', active);
+      chip.setAttribute('aria-pressed', active);
+    });
+    applyFilters();
+  }));
+  $$('.person-filters .filter-chip').forEach(button => button.addEventListener('click', () => {
+    person = button.dataset.person;
+    $$('.person-filters .filter-chip').forEach(chip => {
       const active = chip === button;
       chip.classList.toggle('active', active);
       chip.setAttribute('aria-pressed', active);

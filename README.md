@@ -46,6 +46,8 @@ category: "访谈"
 文章正文……
 ```
 
+一家公司有多位相关人物时，可在 `scripts/content.mjs` 的公司配置里增加 `people` 数组（如腾讯：马化腾、张小龙、刘炽平），并在文章元数据里用 `person` 指定本篇人物；公司页会出现按人物筛选。年报等原始 PDF 可以放在公司目录中，构建时会原样复制到 `dist/company/`，在文章里用相对路径链接即可。
+
 需要原始资料入口的导读可配置 `sourceTitle`、`sourceName`、`sourceUrl`、`sourceForm`、`sourceStatus`、`sourcePublished` 和 `sourceNote`。`sourceStatus` 使用 `original`（原站来源）、`author_republish`（作者公开稿）或 `reprint_only`（现存转载）；`sourceForm` 使用 `full_text`、`excerpt`、`report_excerpt`、`video`、`audio` 或 `book`。`sourcePublished` 是来源稿件的发表日期，与活动／录制日期分开。未配置来源入口的文章直接显示正文。
 
 ## Cloudflare Pages 部署
