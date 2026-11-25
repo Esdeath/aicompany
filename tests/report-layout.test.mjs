@@ -14,7 +14,7 @@ const inlineText = token => (token.children || []).map(child =>
     : ['softbreak', 'hardbreak'].includes(child.type) ? '\n' : '').join('');
 
 for (const original of fixtures) {
-  test(`${original.file}: original text, numbers, metadata, links and images remain intact`, async () => {
+  test(`${original.file}: approved terminology, original numbers, metadata, links and images remain intact`, async () => {
     const raw = await readFile(new URL(original.file, directory), 'utf8');
     const metadata = raw.match(/^---\n[\s\S]*?\n---\n/)[0];
     const tokens = parser.parse(raw.slice(metadata.length), {});
@@ -26,7 +26,7 @@ for (const original of fixtures) {
       if (child.type === 'image') images.push([child.attrGet('src'), child.content]);
     }
     assert.equal(digest(metadata), original.metadata, 'metadata');
-    assert.equal(digest(parts.join('').replace(/\s/g, '')), original.text, 'visible text in original order');
+    assert.equal(digest(parts.join('').replace(/\s/g, '')), original.terminologyText || original.text, 'visible text in original order with approved terminology');
     assert.equal(digest(JSON.stringify(parts.join('\n').match(/\d[\d,.]*%?/g) || [])), original.numbers, 'numeric values in original order');
     assert.equal(digest(JSON.stringify(links)), original.links, 'source links');
     assert.equal(digest(JSON.stringify(images)), original.images, 'original illustrations');
@@ -46,8 +46,8 @@ test('financial statement notes and comparative amounts occupy separate columns'
     while (tokens[++index].type !== 'tr_close') if (tokens[index].type === 'inline') values.push(inlineText(tokens[index]));
     rows.push(values);
   }
-  assert(rows.some(row => JSON.stringify(row) === JSON.stringify(['收益', '6', '13,037,749', '6,301,002'])));
-  assert(rows.some(row => JSON.stringify(row) === JSON.stringify(['金融资产减值亏损拨备', '', '(3,446)', '(745)'])));
+  assert(rows.some(row => JSON.stringify(row) === JSON.stringify(['收入', '6', '13,037,749', '6,301,002'])));
+  assert(rows.some(row => JSON.stringify(row) === JSON.stringify(['金融资产减值损失', '', '(3,446)', '(745)'])));
   const interim = await readFile(new URL('2025年中期报告-简体中文.md', directory), 'utf8');
   assert(interim.includes('|  | 2025年 | 2024年 | 变动 |'), 'comparative years align with the amount columns');
   assert(interim.includes('|  | 人民币千元 | 人民币千元 |  |'), 'units align with the amount columns');
