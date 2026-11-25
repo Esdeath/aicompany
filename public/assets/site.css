@@ -247,14 +247,24 @@ kbd { padding: 2px 4px; border: 1px solid var(--line); border-radius: 3px; font-
 .ai-answer-box { padding: 23px; border: 1px solid var(--line); background: var(--surface); }
 .ai-answer-box .about-links { display: flex; flex-wrap: wrap; gap: 16px; margin: 22px 0 0; }
 .ai-answer-box .about-links a { color: var(--accent); font-size: 13px; text-decoration: underline; text-decoration-color: var(--accent-underline); text-underline-offset: 4px; }
+.faq-list { max-width: 760px; }
+.faq-item { padding: 15px 0; border-bottom: 1px solid var(--line); }
+.faq-item:first-child { padding-top: 0; }
+.faq-item h3 { margin: 0 0 6px; font-family: var(--reading); font-size: 18px; line-height: 1.6; }
+.faq-item p { margin: 0; }
 .page-topline { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 12px; }
 .breadcrumb { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; color: var(--subtle); font-size: 11px; line-height: 1.8; }
 .breadcrumb a:hover { color: var(--accent); }
 .breadcrumb svg { width: 12px; height: 12px; }
 .breadcrumb span[aria-current="page"] { color: var(--fg); }
 .edition-note { color: var(--subtle); font-size: 10px; letter-spacing: 0.06em; white-space: nowrap; }
-.page-footer { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px 20px; margin-top: 52px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--subtle); font-size: 11px; line-height: 1.8; }
+.page-footer { margin-top: 52px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--subtle); font-size: 11px; line-height: 1.8; }
+.footer-line { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px 20px; }
 .page-footer p { margin: 0; }
+.footer-libraries { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 14px; margin-top: 10px; }
+.footer-libraries-label { opacity: 0.8; }
+.footer-libraries a { color: var(--subtle); text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 3px; transition: color 0.15s ease, text-decoration-color 0.15s ease; }
+.footer-libraries a:hover { color: var(--muted); text-decoration-color: currentColor; }
 .mobile-topbar, .mobile-backdrop { display: none; }
 
 /* Company shelf and article archive. */
@@ -344,6 +354,7 @@ kbd { padding: 2px 4px; border: 1px solid var(--line); border-radius: 3px; font-
 .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 { scroll-margin-top: 27px; font-family: var(--reading); font-weight: 700; }
 .prose h1 { margin: 1.65em 0 0.6em; font-size: 1.65em; line-height: 1.4; }
 .prose h2 { margin: 2em 0 0.65em; padding-top: 1.2em; border-top: 1px solid var(--line); font-size: 1.23em; line-height: 1.5; }
+.prose h2.article-subhead { margin: 1.65em 0 0.6em; padding-top: 0; border-top: 0; font-size: 1.65em; line-height: 1.4; }
 .prose h2:first-child { padding-top: 0; border-top: 0; }
 .prose h3 { margin: 1.6em 0 0.55em; font-size: 1.1em; line-height: 1.55; }
 .prose h4, .prose h5, .prose h6 { margin: 1.4em 0 0.5em; font-size: 1em; line-height: 1.6; }

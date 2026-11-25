@@ -252,7 +252,12 @@ function headingAnchors(tokens, title, report = false) {
     used.set(base, count);
     const id = count === 1 ? base : `${base}-${count}`;
     token.attrSet('id', id);
-    const level = Number(token.tag.slice(1));
+    // The page template owns the single H1; in-article H1s are section headings.
+    const level = token.tag === 'h1' ? 2 : Number(token.tag.slice(1));
+    if (token.tag === 'h1') {
+      token.tag = 'h2';
+      token.attrSet('class', 'article-subhead');
+    }
     if (!report || level <= 3) toc.push({ id, title: heading, level });
     if (report && level === 6) {
       token.attrSet('class', /^原PDF第\d+页$/.test(heading) ? 'report-page-marker' : 'report-running');
